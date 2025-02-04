@@ -9,17 +9,21 @@ const SALT_ROUNDS = 10
 
 const userRepository = new UserRepository()
 
-export const registerUser = async (createUserDto: CreateUserDto): Promise<User> => {
-    const hashedPassword = await bcrypt.hash(createUserDto.password, SALT_ROUNDS)
+export const registerUser = async (createUserDto: CreateUserDto): Promise<Omit<User, 'password'>> => {
+    if (await userRepository.userExists(createUserDto.username)) {
+        throw new AuthError('User with that username exists')
+    }
 
-    return await userRepository.create({username: createUserDto.username, password: hashedPassword})
+    const hashedPassword = await createPasswordHash(createUserDto.password)
+
+    return await userRepository.create({ username: createUserDto.username, password: hashedPassword })
 }
 
-export const loginUser = async (username: string, password: string): Promise<Omit<User, 'password'>> => {
+export const loginUser = async (username: string, password: string): Promise<Omit<User, 'password'> | null> => {
     const user = await userRepository.findByUsername(username)
-    if (!user) throw new AuthError(`User not found: ${username}`)
+    if (!user) return null
 
-    if (!await isPasswordValid(password, user.password)) throw new AuthError('Username or password is invalid')
+    if (!await isPasswordValid(password, user.password)) return null
 
     const { password: _, ...loggedInUser } = user
 
@@ -34,11 +38,15 @@ export const changePassword = async (userId: number, changePasswordDto: ChangePa
 
     if (!await isPasswordValid(oldPassword, user.password)) throw new AuthError('Old password is invalid')
 
-    const hashedPassword = await bcrypt.hash(newPassword, SALT_ROUNDS)
+    const hashedPassword = await createPasswordHash(newPassword)
 
     await userRepository.changePassword(userId, hashedPassword)
 }
 
 const isPasswordValid = async (givenPassword: string, passwordHash: string): Promise<boolean> => {
-    return await bcrypt.compare(passwordHash, givenPassword)
+    return await bcrypt.compare(givenPassword, passwordHash)
+}
+
+const createPasswordHash = async (plainPassword: string): Promise<string> => {
+    return await bcrypt.hash(plainPassword, SALT_ROUNDS)
 }
