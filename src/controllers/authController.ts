@@ -1,4 +1,5 @@
-import { Request, Response } from 'express'
+import 'express-async-errors'
+import { NextFunction, Request, Response } from 'express'
 import { validateDto } from '../middleware/validation.middleware'
 import { CreateUserDto } from '../dtos/create-user.dto'
 import * as authService from '../services/auth/auth.service'
@@ -9,7 +10,7 @@ import { isAuthenticated } from '../middleware/auth.middleware'
 
 export const register = [
     validateDto(CreateUserDto),
-    async (req: Request, res: Response) => {
+    async (req: Request, res: Response, next: NextFunction) => {
         const createUserDto: CreateUserDto = req.body as CreateUserDto
         try {
             const newUser = await authService.registerUser(createUserDto)
@@ -17,8 +18,9 @@ export const register = [
         } catch (error) {
             if (error instanceof AuthError) {
                 res.status(400).json({ message: 'Registration failed: ' + error.message })
+            } else {
+                next(error)
             }
-            throw error
         }
     },
 ]
@@ -38,20 +40,32 @@ export const login = [
     },
 ]
 
+export const logout = [
+    isAuthenticated,
+    async (req: Request, res: Response) => {
+        req.session.destroy(error => {
+            error
+                ? res.status(500).json({ message: 'Logout failed' })
+                : res.status(204).send()
+        })
+    },
+]
+
 export const changePassword = [
     isAuthenticated,
     validateDto(ChangePasswordDto),
-    async (req: Request, res: Response) => {
+    async (req: Request, res: Response, next: NextFunction) => {
         const changePasswordDto = req.body
         try {
             await authService.changePassword(req.session.userId as number, changePasswordDto)
 
-            res.sendStatus(200)
+            res.status(200).send()
         } catch (e) {
             if (e instanceof AuthError) {
                 res.status(400).json({ message: e.message })
+            } else {
+                next(e)
             }
-            throw e
         }
-    }
+    },
 ]

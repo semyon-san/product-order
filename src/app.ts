@@ -1,5 +1,5 @@
 import 'dotenv/config'
-import express from 'express'
+import express, { NextFunction, Response, Request } from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import session from 'express-session'
@@ -16,9 +16,14 @@ app.use(
         resave: false,
         saveUninitialized: true,
         cookie: { secure: !!process.env.IS_HTTPS },
-    })
+    }),
 )
 
 app.use('/api', authRoutes)
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.error(err)
+    res.status(500).json({ message: 'Server side error: notify site admin' })
+})
 
 export default app
