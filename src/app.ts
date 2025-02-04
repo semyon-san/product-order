@@ -3,7 +3,8 @@ import express, { NextFunction, Response, Request } from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import session from 'express-session'
-import authRoutes from './routes/authRoutes'
+import authRoutes from './routes/auth.routes'
+import marketplaceRoutes from './routes/marketplace.routes'
 
 const app = express()
 
@@ -20,6 +21,7 @@ app.use(
 )
 
 app.use('/api', authRoutes)
+app.use('/api', marketplaceRoutes)
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error(err)
