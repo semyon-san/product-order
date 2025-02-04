@@ -1,1 +1,7 @@
 Test NodeJS project
+
+1. docker-compose up -d
+2. npm run migrate
+3. POST http://localhost:3000/api/auth/login (username: test, password: password)
+
+Example .env in .env.example
