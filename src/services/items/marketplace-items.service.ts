@@ -1,4 +1,5 @@
 import { convertObjectForUrlSearchParams } from '../../helpers/object.helper'
+import { cacheService, CacheServiceType } from '../../cache/cache.service'
 
 export interface ItemMinPriceTradeTypeInfo extends ItemInfo {
     tradableMinPrice: number | undefined
@@ -32,6 +33,17 @@ interface QueryParams {
 class MarketplaceItemsService {
     private readonly baseUrl = 'https://api.skinport.com/v1/items'
 
+    private readonly cacheService: CacheServiceType
+    private readonly cacheTimeout = 60 * 5
+
+    constructor() {
+        this.cacheService = cacheService
+    }
+
+    public getCacheTimeout(): number {
+        return this.cacheTimeout
+    }
+
     public async fetchLowestPriceItems(appId: number = 730, currency: string = 'EUR'): Promise<ItemMinPriceTradeTypeInfo[]> {
         const [tradableItems, nonTradableItems] = await Promise.all([
             this.fetch({
@@ -52,14 +64,25 @@ class MarketplaceItemsService {
     private async fetch(query: QueryParams): Promise<ItemFullInfo[]> {
         const params = new URLSearchParams(convertObjectForUrlSearchParams(query))
 
-        const response = await fetch(`${this.baseUrl}?${params}`, {
+        const url = `${this.baseUrl}?${params}`
+
+        const cachedData = await this.cacheService.get(url)
+        if (cachedData) {
+            return JSON.parse(cachedData)
+        }
+
+        const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Accept-Encoding': 'br',
             },
         })
 
-        return await response.json()
+        const result = await response.json()
+
+        await this.cacheService.set(url, JSON.stringify(result), this.cacheTimeout)
+
+        return result
     }
 
     private findMinTradeTypePrices(tradableItems: ItemFullInfo[], nonTradableItems: ItemFullInfo[]): ItemMinPriceTradeTypeInfo[] {

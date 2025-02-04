@@ -20,8 +20,10 @@ app.use(
     }),
 )
 
-app.use('/api', authRoutes)
-app.use('/api', marketplaceRoutes)
+const rootRoute = '/api'
+
+app.use(rootRoute, authRoutes)
+app.use(rootRoute, marketplaceRoutes)
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error(err)

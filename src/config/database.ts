@@ -7,8 +7,7 @@ const sql = postgres({
     database: process.env.DB_NAME || 'product_order',
     username: process.env.DB_USERNAME || 'product_order',
     password: process.env.DB_PASSWORD || 'product_order',
-    transform: postgres.camel,
-    debug: true
+    transform: postgres.camel
 })
 
 export default sql
