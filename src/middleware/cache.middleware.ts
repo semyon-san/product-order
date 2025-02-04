@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import { cacheService } from '../cache/cache.service'
+import { cacheService } from '../services/cache/cache.service'
 
 export const cache = async (req: Request, res: Response, next: NextFunction) => {
     const key = req.originalUrl

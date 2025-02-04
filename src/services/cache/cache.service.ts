@@ -1,4 +1,4 @@
-import redisClient from '../config/redis'
+import redisClient from '../../config/redis'
 
 export interface CacheServiceType {
     set(key: string, value: string, timeout: number): Promise<void>

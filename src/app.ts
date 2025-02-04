@@ -5,6 +5,8 @@ import cors from 'cors'
 import session from 'express-session'
 import authRoutes from './routes/auth.routes'
 import marketplaceRoutes from './routes/marketplace.routes'
+import productRoutes from './routes/product.routes'
+import purchaseRoutes from './routes/purchase.routes'
 
 const app = express()
 
@@ -24,6 +26,8 @@ const rootRoute = '/api'
 
 app.use(rootRoute, authRoutes)
 app.use(rootRoute, marketplaceRoutes)
+app.use(rootRoute, productRoutes)
+app.use(rootRoute, purchaseRoutes)
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error(err)

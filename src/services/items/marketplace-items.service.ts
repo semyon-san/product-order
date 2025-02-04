@@ -1,5 +1,5 @@
 import { convertObjectForUrlSearchParams } from '../../helpers/object.helper'
-import { cacheService, CacheServiceType } from '../../cache/cache.service'
+import { cacheService, CacheServiceType } from '../cache/cache.service'
 
 export interface ItemMinPriceTradeTypeInfo extends ItemInfo {
     tradableMinPrice: number | undefined

@@ -1,13 +1,11 @@
 import bcrypt from 'bcrypt'
 import { User } from '../../models/user'
-import { CreateUserDto } from '../../dtos/create-user.dto'
-import { ChangePasswordDto } from '../../dtos/change-password.dto'
-import { UserRepository } from '../../repositories/user.repository'
+import { CreateUserDto } from '../../dtos/auth/create-user.dto'
+import { ChangePasswordDto } from '../../dtos/auth/change-password.dto'
+import userRepository from '../../repositories/user.repository'
 import { AuthError } from './exceptions/auth.exception'
 
 const SALT_ROUNDS = 10
-
-const userRepository = new UserRepository()
 
 export const registerUser = async (createUserDto: CreateUserDto): Promise<Omit<User, 'password'>> => {
     if (await userRepository.userExists(createUserDto.username)) {

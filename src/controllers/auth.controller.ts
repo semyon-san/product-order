@@ -1,10 +1,10 @@
 import 'express-async-errors'
 import { NextFunction, Request, Response } from 'express'
 import { validateDto } from '../middleware/validation.middleware'
-import { CreateUserDto } from '../dtos/create-user.dto'
+import { CreateUserDto } from '../dtos/auth/create-user.dto'
 import * as authService from '../services/auth/auth.service'
-import { LoginUserDto } from '../dtos/login-user.dto'
-import { ChangePasswordDto } from '../dtos/change-password.dto'
+import { LoginUserDto } from '../dtos/auth/login-user.dto'
+import { ChangePasswordDto } from '../dtos/auth/change-password.dto'
 import { AuthError } from '../services/auth/exceptions/auth.exception'
 import { isAuthenticated } from '../middleware/auth.middleware'
 

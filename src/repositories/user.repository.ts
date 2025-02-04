@@ -1,7 +1,7 @@
 import sql from '../config/database'
 import { User } from '../models/user'
 
-export class UserRepository {
+class UserRepository {
     public async findById(id: number): Promise<User | null> {
         const [user] = await sql<User[]>`SELECT *
                                          FROM users
@@ -44,3 +44,5 @@ export class UserRepository {
         return !!user
     }
 }
+
+export default new UserRepository()
