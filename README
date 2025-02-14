@@ -1,5 +1,5 @@
 Test NodeJS project.
-Test requirements: postgres.js, sessions, API calls, redis caching. User balance in requirements was of type FLOAT.
+Test requirements: express.js, postgres.js, sessions, API calls, redis caching. User balance in requirements was of type FLOAT.
 
 1. docker-compose up -d
 2. npm run migrate
